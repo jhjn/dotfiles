@@ -1,1 +1,1 @@
-Sync/comp/.bashrc
+/Users/joejenne/Sync/comp/.bashrc
