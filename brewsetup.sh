@@ -1,0 +1,1 @@
+Sync/comp/brewsetup.sh
