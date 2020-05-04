@@ -2,7 +2,7 @@ set -o vi
 
 export PS1='\[\e[0;49;33m\]\w\[\e[1;49;34m\]$ \[\e[0m\]'
 export EDITOR=vim
-export FZF_DEFAULT_COMMAND='rg --files --preview "bat {}" --no-ignore --hidden --follow -g "!{.git,node_modules,Library}/*" 2> /dev/null'
+export FZF_DEFAULT_COMMAND="rg --files --no-ignore --hidden --follow -g '\!{.git,node_modules,Library}/*' 2> /dev/null"
 #export RESTIC_REPOSITORY='sftp:rpi:/srv/restic-repo'
 export RESTIC_REPOSITORY='sftp:zero:/home/jhjn/restic-bkp'
 
@@ -14,7 +14,6 @@ alias ts="task sync"
 alias ytdl="youtube-dl"
 alias iina="open -a iina"
 alias ic="cd /Users/joejenne/Library/Mobile\ Documents/com~apple~CloudDocs && ls"
-alias f="fff"
 alias ls="ls -FG"
 ## GIT
 alias gs="git status --short"
@@ -25,14 +24,20 @@ gl () {
 	re='^[0-9]+$'
 	[[ "$@" =~ $re ]] && git log -"$@" --pretty="%Cred%h %Cgreen%ar %Cblue%B%Creset" || git log -1 --pretty="%Cred%h %Cgreen%ar %Cblue%B%Creset"&& return
 }
-alias glog="git log --graph --oneline"
 alias cfg='/usr/bin/git --git-dir=$HOME/.config/.dotfiles/ --work-tree=$HOME'
 alias bashrc="bat ~/.bashrc"
 
 # FUNCTIONS
-function tmp {
-  cd $(mktemp -d /tmp/$1.XXXX)
+f() { # general browse
+    fff "$@"
+    cd "$(cat "${XDG_CACHE_HOME:=${HOME}/.cache}/fff/.fff_d")"
 }
+ff() { # edit file
+	clear
+	local ff_file=$(rg --files --no-ignore --hidden -g '!{.git,node_modules,Library,Pictures,.Trash,Movies,Music}/*' 2> /dev/null | fzf --preview "bat --plain --color always {}" --reverse )
+	[ -n "$ff_file" ] && cd "$(dirname "$ff_file" )" && vim "${ff_file##*/}"
+}
+
 
 lsl () { du -sh * | sort -h | awk '{ print "\033[1;31m"$1"\t""\033[1;34m"$2"\033[0m " }' | column -t; }
 
@@ -44,26 +49,11 @@ twitch () {
 	streamlink --player "mpv -" "http://twitch.tv/$@" best
 }
 
-tan () {
-	task $@ info | grep Annotation | awk -F\' '{print $2}'
-}
-
 0x0 () {
 	if [ -z "$@" ]; then
 		echo "Specify a file" && return
 	fi
 	curl -F "file=@$@" 0x0.st
-}
-
-cdd() {
-	cd $(find ~ -type d | grep -vs "Library" | fzf)
-}
-
-mdeep () {
-	file=$@
-	filename="${file%.*}"
-	cat ~/.scripts/markdeep.txt >> $@
-	mv "$@" "$filename.md.html"
 }
 
 function bbc () {
@@ -72,8 +62,8 @@ function bbc () {
 
 # FFF customisation
 export FFF_FAV1=~
-export FFF_FAV2=~/Documents
-export FFF_FAV3=/Users/joejenne/Library/Mobile\ Documents/com~apple~CloudDocs/Cambridge/II
+export FFF_FAV2=~/Sync/phys/III/project
+export FFF_FAV3=~/Documents
 export FFF_FAV4=Sync
 export FFF_FAV5=~/.bashrc
 export FFF_FAV6=~/.vimrc
@@ -123,3 +113,5 @@ ix() {
 
 source ~/.config/commacd.sh
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
