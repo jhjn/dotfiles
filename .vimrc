@@ -9,7 +9,7 @@ set shiftwidth=4                            " ^^^^ used with ^^^^
 set softtabstop=4                           "Deleting a tab deletes ' '
 set clipboard=unnamed                       "Use macOS clipboard in vim
 set scrolloff=2                             "Start scroll w 2 lines left
-set smartcase          "REMOVE??????
+set smartcase                               "Case snstv when uppercase
 set backspace=2                             "Backspace works as intended
 set foldlevel=99                            "Begin w folds open, zM clos
 set viminfo+=n~/.vim/viminfo                "Misc. between open & close
@@ -26,24 +26,25 @@ filetype off                                "Needed for Vundle
 set rtp+=~/.vim/bundle/Vundle.vim           "Needed for Vundle
 call vundle#begin()                         "Needed for Vundle
 Plugin 'VundleVim/Vundle.vim'               "Needed for Vundle
-Plugin 'itchyny/lightline.vim'              "Lightline
+Plugin 'itchyny/lightline.vim'              "Custom status bar
 	set noshowmode                          "Hide default "INSERT"
 	set laststatus=2                        "2 = always show statusbar
 	let g:lightline = 
 		\ {'colorscheme': 'jellybeans'}     "Jellybean colours
-Plugin 'junegunn/goyo.vim'                  "Goyo
-Plugin 'junegunn/gv.vim'                    "Git commit viewer
-Plugin 'justinmk/vim-sneak'                 "Sneak
-Plugin 'preservim/nerdtree'                 "NerdTree
-Plugin 'SirVer/ultisnips'                   "UltiSnips
+Plugin 'junegunn/goyo.vim'                  "Distraction free mode
+Plugin 'justinmk/vim-sneak'                 "s<letter><letter>
+Plugin 'majutsushi/tagbar'                  "Tag overview of file
+Plugin 'preservim/nerdtree'                 "File browsing ,f
+Plugin 'SirVer/ultisnips'                   "Snippet expansion
 	let g:UltiSnipsExpandTrigger = '<tab>'
 	let g:UltiSnipsJumpForwardTrigger = '<tab>'
 	let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
 	let g:UltiSnipsListSnippets = '<leader><tab>'
+Plugin 'terryma/vim-expand-region'          "+ expands selection (_)
 Plugin 'tpope/vim-commentary'               "Comment using gc (gcc)
-Plugin 'tpope/vim-fugitive'                 "Fugitive
+Plugin 'tpope/vim-fugitive'                 "Git integration
 Plugin 'tpope/vim-surround'                 "Surround
-Plugin 'vimwiki/vimwiki'                    "VimWiki
+Plugin 'vimwiki/vimwiki'                    "<Enter> on []() go to file
 	let g:vimwiki_list = [{'path': '~/Nextcloud/vw', 'syntax':
 				\ 'markdown', 'ext': '.md'}]
 	let g:vimwiki_global_ext = 0            "Stops all .md being vimwiki
@@ -80,15 +81,20 @@ vnoremap <leader>a :!column -t<Return>
 vnoremap <leader>s :sort<Return>
 
 "----------------------------Plugin-Bindings----------------------------
+"Fugitive
+" press gq after ,gs to see all the staging commands
+nnoremap <leader>gs :Git<Return>
+nnoremap <leader>gc :Gcommit<Return>
+nnoremap <leader>gd :Git diff<Return>
+
+"Goyo
+nnoremap <leader>y :Goyo<Return>
+
 "NerdTree
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree 
 			\ | endif
-map <C-n> :NERDTreeToggle<Return>
+nnoremap <leader>f :NERDTreeToggle<Return>
 
-"Goyo
-nnoremap <leader>g :Goyo<Return>
-
-"GV
-nnoremap <leader>vv :GV<Return>
-nnoremap <leader>vf :GV!<Return>
+"Tagbar
+nnoremap <leader>t :TagbarToggle<Return>
