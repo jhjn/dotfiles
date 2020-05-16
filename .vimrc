@@ -10,9 +10,12 @@ set softtabstop=4                           "Deleting a tab deletes ' '
 set clipboard=unnamed                       "Use macOS clipboard in vim
 set scrolloff=2                             "Start scroll w 2 lines left
 set smartcase                               "Case snstv when uppercase
+set lazyredraw                              "Dont redraw screen in macro
+set undofile                                "Undo persists after close
 set backspace=2                             "Backspace works as intended
-set foldlevel=99                            "Begin w folds open, zM clos
+set foldlevel=99                            "Folds begin open, zM closes
 set viminfo+=n~/.vim/viminfo                "Misc. between open & close
+set suffixesadd={.md}                       "gf on foo finds foo.md too
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"    "Insert = straight line
 let &t_SR = "\<Esc>]50;CursorShape=2\x7"    "Replace = underline
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"    "Normal = block
@@ -46,7 +49,7 @@ Plugin 'tpope/vim-fugitive'                 "Git integration
 Plugin 'tpope/vim-surround'                 "Surround
 Plugin 'vimwiki/vimwiki'                    "<Enter> on []() go to file
 	let g:vimwiki_list = [{'path': '~/Nextcloud/vw', 'syntax':
-				\ 'markdown', 'ext': '.md'}]
+				\ 'default', 'ext': '.md'}]
 	let g:vimwiki_global_ext = 0            "Stops all .md being vimwiki
 call vundle#end()                           "Needed for Vundle
 filetype plugin indent on                   "Needed for Vundle
@@ -54,8 +57,6 @@ filetype plugin indent on                   "Needed for Vundle
 "-------------------------------Bindings--------------------------------
 "General
 inoremap jj <Esc>
-nnoremap <C-e> 3<C-e>
-nnoremap <C-y> 3<C-y>
 nnoremap <Space> za
 nnoremap ? :marks<Return>
 nnoremap H 0
@@ -63,20 +64,30 @@ nnoremap J 3<C-e>
 nnoremap K 3<C-y>
 nnoremap L $
 nnoremap Y y$
+nnoremap Q @@
 nnoremap j gj
 nnoremap k gk
 nnoremap gs "ydiw"zxe"zp"yp
 nnoremap gS "ydiw"zxb"zP"yP
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
+" For outputting shell command in buffer
+:command! -nargs=* -complete=shellcmd Shell new | setlocal buftype=nofile bufhidden=hide noswapfile | r !<args>
 "Leader
 let mapleader=","
 nnoremap <leader>a :%!column -t<Return>
+nnoremap <leader>b :terminal<Return>
 nnoremap <leader>c :w! \| !compiler "%"<Return>
 nnoremap <leader>d :pu=strftime('%Y-%m-%d %a')<Return>o
+nnoremap <leader>l :!make 
 nnoremap <leader>m `m
 nnoremap <leader>o :!open "%<.pdf"<Return> 
 nnoremap <leader>p :!pp % \| vim -<Return>
 nnoremap <leader>s :%s/\<<C-r><C-w>\>//<Left>
+"nnoremap <leader>@ :Shell jkl <C-r><C-w><Return>
 vnoremap <leader>a :!column -t<Return>
 vnoremap <leader>s :sort<Return>
 
@@ -98,3 +109,16 @@ nnoremap <leader>f :NERDTreeToggle<Return>
 
 "Tagbar
 nnoremap <leader>t :TagbarToggle<Return>
+
+"Vimwiki
+map <leader>= =0ylo<Esc>65pkhljlDyykP
+autocmd FileType vimwiki nnoremap <Space> :VimwikiToggleListItem<Return>
+hi VimwikiHeader1 ctermfg=160
+hi VimwikiHeader2 ctermfg=161
+hi VimwikiHeader3 ctermfg=1
+hi VimwikiHeader4 ctermfg=168
+hi VimwikiListTodo ctermfg=8
+hi VimwikiPre ctermfg=141
+hi VimwikiCode ctermfg=99
+hi link VimwikiEqIn Statement
+hi link VimwikiMath Statement
